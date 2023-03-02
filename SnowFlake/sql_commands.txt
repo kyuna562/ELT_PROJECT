@@ -1,0 +1,119 @@
+-- create database raw
+-- CREATE SCHEMA IF NOT EXISTS RAW.RAW;
+
+-- create storage integration aws3_int
+-- 	type = external_stage
+--     storage_provider ='S3'
+--     storage_aws_role_arn = ''
+--     enabled = true
+--     storage_allowed_locations = ('');
+
+-- DESC INTEGRATION aws3_int;
+
+--     -- creating stage
+--     create or replace stage raw_predictit
+--     storage_integration = aws3_int
+--     file_format = (type = json)
+--     url =''
+
+
+    -- selection from stage
+    select metadata$filename, * from @raw_predictit
+
+-- create a new table tbl_raw_predictit
+    create or replace table tbl_raw_predictit(
+    file_name varchar(100),
+    raw_value variant
+    );
+-- copy stage data into new table tbl_raw_predictit task
+    CREATE TASK insert_raw_predictit
+    WAREHOUSE = COMPUTE_WH 
+    SCHEDULE ='USING CRON 0 2 * * * America/Los_Angeles'
+    TIMESTAMP_INPUT_FORMAT = 'YYYY-MM-DD HH24'
+    AS
+    copy into tbl_raw_predictit(file_name,raw_value)
+    from (select metadata$filename, t.$1 from @raw_predictit T)
+
+  	-- MANAGING THE TASKS
+	ALTER TASK public.insert_raw_predictit SUSPEND
+    ALTER TASK public.insert_raw_predictit RESUME
+    ALTER TASK public.insert_markets RESUME
+    ALTER TASK public.insert_contracts RESUME
+  	show tasks
+    
+-- create new table stg_predictit_markets
+    create or replace table stg_predictit_markets(
+    id int,
+    predictit_name varchar(200),
+    predictit_short_name varchar(100),
+    predictit_url varchar(500)
+    );
+
+  
+-- markets inserting task
+ CREATE TASK insert_markets
+    WAREHOUSE = COMPUTE_WH 
+    TIMESTAMP_INPUT_FORMAT = 'YYYY-MM-DD HH24'
+    AFTER insert_raw_predictit
+    AS
+insert into stg_predictit_markets
+with raw_predictit as (
+select distinct cast(parse_json(markets_json.value):id as int) as id,
+	replace(parse_json(markets_json.value) :name,'"','') as predictit_name,
+	replace(parse_json(markets_json.value) :shortName,'"','') as predictit_short_name,
+	replace(parse_json(markets_json.value) :url,'"','') as predictit_url
+from raw.public.tbl_raw_predictit,
+	lateral flatten(parse_json(raw_value) :markets) markets_json)
+	select raw_predictit.*
+	from raw_predictit
+	left join stg_predictit_markets stg_predictit on raw_predictit.id = stg_predictit.id
+    where stg_predictit.id is null
+order by 1;
+
+
+
+
+-- creating table for market contracts data
+   create or replace table stg_predictit_contracts(
+    id int,
+    predictit_contract_id int,
+    IMAGE varchar(500),
+    end_date varchar(100),
+    contract_name varchar(200),
+    contract_status_name varchar(200),
+    contract_short_name varchar(200),
+    last_trade_price float,
+    best_buy_yes_cost float,
+    best_buy_no_cost float,
+    best_sell_yes_cost float,
+    best_sell_no_cost float,
+    last_close_price float,
+    dateid int);
+
+
+-- inserting contracts
+CREATE TASK insert_contracts
+    WAREHOUSE = COMPUTE_WH 
+    TIMESTAMP_INPUT_FORMAT = 'YYYY-MM-DD HH24'
+    AFTER insert_markets
+    AS
+insert into stg_predictit_contracts
+select parse_json(market_values.value) :id as id,
+	parse_json(contracts.value) :id as predictit_contract_id,
+	parse_json(contracts.value) :image as IMAGE,
+	parse_json(contracts.value) :dateEnd as end_date,
+	parse_json(contracts.value) :name as contract_name,
+	parse_json(contracts.value) :status as contract_status_name,
+	parse_json(contracts.value) :shortName as contract_short_name,
+	parse_json(contracts.value) :lastTradePrice as last_trade_price,
+	parse_json(contracts.value) :bestBuyYesCost as best_buy_yes_cost,
+	parse_json(contracts.value) :bestBuyNoCost as best_buy_no_cost,
+	parse_json(contracts.value) :bestSellYesCost as best_sell_yes_cost,
+	parse_json(contracts.value) :bestSellNoCost as best_sell_no_cost,
+	parse_json(contracts.value) :lastClosePrice as last_close_price,
+	cast(replace(split(split(file_name, '_') [2], '.') [0], '-', '') as INT) as dateid
+from tbl_raw_predictit,
+	lateral flatten(parse_json(raw_value) :markets) market_values,
+	lateral flatten(parse_json(market_values.value) :contracts) contracts
+order by 2,
+	1

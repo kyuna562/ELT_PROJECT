@@ -1,0 +1,4 @@
+apache-airflow-providers-snowflake==4.0.3
+apache-airflow-providers-amazon==7.1.0
+airflow-provider-great-expectations==0.0.6
+boto3

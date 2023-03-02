@@ -1,0 +1,71 @@
+[2023-02-21T00:25:14.889+0000] {taskinstance.py:1083} INFO - Dependencies all met for <TaskInstance: predictit_dag.process_json scheduled__2023-02-20T00:00:00+00:00 [queued]>
+[2023-02-21T00:25:14.902+0000] {taskinstance.py:1083} INFO - Dependencies all met for <TaskInstance: predictit_dag.process_json scheduled__2023-02-20T00:00:00+00:00 [queued]>
+[2023-02-21T00:25:14.902+0000] {taskinstance.py:1279} INFO - 
+--------------------------------------------------------------------------------
+[2023-02-21T00:25:14.902+0000] {taskinstance.py:1280} INFO - Starting attempt 1 of 2
+[2023-02-21T00:25:14.902+0000] {taskinstance.py:1281} INFO - 
+--------------------------------------------------------------------------------
+[2023-02-21T00:25:14.930+0000] {taskinstance.py:1300} INFO - Executing <Task(PythonOperator): process_json> on 2023-02-20 00:00:00+00:00
+[2023-02-21T00:25:14.935+0000] {standard_task_runner.py:55} INFO - Started process 1553 to run task
+[2023-02-21T00:25:14.938+0000] {standard_task_runner.py:82} INFO - Running: ['***', 'tasks', 'run', 'predictit_dag', 'process_json', 'scheduled__2023-02-20T00:00:00+00:00', '--job-id', '579', '--raw', '--subdir', 'DAGS_FOLDER/predictit_dag.py', '--cfg-path', '/tmp/tmp_d_nqe73']
+[2023-02-21T00:25:14.938+0000] {standard_task_runner.py:83} INFO - Job 579: Subtask process_json
+[2023-02-21T00:25:15.009+0000] {task_command.py:388} INFO - Running <TaskInstance: predictit_dag.process_json scheduled__2023-02-20T00:00:00+00:00 [running]> on host 9e0dc30811b3
+[2023-02-21T00:25:15.077+0000] {taskinstance.py:1509} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_EMAIL=kyunlee@yahoo.com
+AIRFLOW_CTX_DAG_OWNER=kyun
+AIRFLOW_CTX_DAG_ID=predictit_dag
+AIRFLOW_CTX_TASK_ID=process_json
+AIRFLOW_CTX_EXECUTION_DATE=2023-02-20T00:00:00+00:00
+AIRFLOW_CTX_TRY_NUMBER=1
+AIRFLOW_CTX_DAG_RUN_ID=scheduled__2023-02-20T00:00:00+00:00
+[2023-02-21T00:25:15.724+0000] {taskinstance.py:1768} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.7/site-packages/airflow/operators/python.py", line 175, in execute
+    return_value = self.execute_callable()
+  File "/home/airflow/.local/lib/python3.7/site-packages/airflow/operators/python.py", line 192, in execute_callable
+    return self.python_callable(*self.op_args, **self.op_kwargs)
+  File "/opt/airflow/dags/json_scraper.py", line 14, in json_scraper
+    s3.upload_file(file_name, bucket_name, f"predict_files/{file_name}")
+  File "/home/airflow/.local/lib/python3.7/site-packages/boto3/s3/inject.py", line 148, in upload_file
+    callback=Callback,
+  File "/home/airflow/.local/lib/python3.7/site-packages/boto3/s3/transfer.py", line 292, in upload_file
+    future.result()
+  File "/home/airflow/.local/lib/python3.7/site-packages/s3transfer/futures.py", line 103, in result
+    return self._coordinator.result()
+  File "/home/airflow/.local/lib/python3.7/site-packages/s3transfer/futures.py", line 266, in result
+    raise self._exception
+  File "/home/airflow/.local/lib/python3.7/site-packages/s3transfer/tasks.py", line 139, in __call__
+    return self._execute_main(kwargs)
+  File "/home/airflow/.local/lib/python3.7/site-packages/s3transfer/tasks.py", line 162, in _execute_main
+    return_value = self._main(**kwargs)
+  File "/home/airflow/.local/lib/python3.7/site-packages/s3transfer/upload.py", line 758, in _main
+    client.put_object(Bucket=bucket, Key=key, Body=body, **extra_args)
+  File "/home/airflow/.local/lib/python3.7/site-packages/botocore/client.py", line 530, in _api_call
+    return self._make_api_call(operation_name, kwargs)
+  File "/home/airflow/.local/lib/python3.7/site-packages/botocore/client.py", line 944, in _make_api_call
+    operation_model, request_dict, request_context
+  File "/home/airflow/.local/lib/python3.7/site-packages/botocore/client.py", line 966, in _make_request
+    return self._endpoint.make_request(operation_model, request_dict)
+  File "/home/airflow/.local/lib/python3.7/site-packages/botocore/endpoint.py", line 119, in make_request
+    return self._send_request(request_dict, operation_model)
+  File "/home/airflow/.local/lib/python3.7/site-packages/botocore/endpoint.py", line 198, in _send_request
+    request = self.create_request(request_dict, operation_model)
+  File "/home/airflow/.local/lib/python3.7/site-packages/botocore/endpoint.py", line 137, in create_request
+    operation_name=operation_model.name,
+  File "/home/airflow/.local/lib/python3.7/site-packages/botocore/hooks.py", line 412, in emit
+    return self._emitter.emit(aliased_event_name, **kwargs)
+  File "/home/airflow/.local/lib/python3.7/site-packages/botocore/hooks.py", line 256, in emit
+    return self._emit(event_name, kwargs)
+  File "/home/airflow/.local/lib/python3.7/site-packages/botocore/hooks.py", line 239, in _emit
+    response = handler(**kwargs)
+  File "/home/airflow/.local/lib/python3.7/site-packages/botocore/signers.py", line 105, in handler
+    return self.sign(operation_name, request)
+  File "/home/airflow/.local/lib/python3.7/site-packages/botocore/signers.py", line 189, in sign
+    auth.add_auth(request)
+  File "/home/airflow/.local/lib/python3.7/site-packages/botocore/auth.py", line 418, in add_auth
+    raise NoCredentialsError()
+botocore.exceptions.NoCredentialsError: Unable to locate credentials
+[2023-02-21T00:25:15.732+0000] {taskinstance.py:1323} INFO - Marking task as UP_FOR_RETRY. dag_id=predictit_dag, task_id=process_json, execution_date=20230220T000000, start_date=20230221T002514, end_date=20230221T002515
+[2023-02-21T00:25:15.742+0000] {standard_task_runner.py:105} ERROR - Failed to execute job 579 for task process_json (Unable to locate credentials; 1553)
+[2023-02-21T00:25:15.752+0000] {local_task_job.py:208} INFO - Task exited with return code 1
+[2023-02-21T00:25:15.766+0000] {taskinstance.py:2578} INFO - 0 downstream tasks scheduled from follow-on schedule check

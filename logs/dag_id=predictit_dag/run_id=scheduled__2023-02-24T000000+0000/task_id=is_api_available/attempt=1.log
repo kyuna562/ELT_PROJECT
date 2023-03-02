@@ -1,0 +1,26 @@
+[2023-02-25T03:45:43.789+0000] {taskinstance.py:1083} INFO - Dependencies all met for <TaskInstance: predictit_dag.is_api_available scheduled__2023-02-24T00:00:00+00:00 [queued]>
+[2023-02-25T03:45:43.813+0000] {taskinstance.py:1083} INFO - Dependencies all met for <TaskInstance: predictit_dag.is_api_available scheduled__2023-02-24T00:00:00+00:00 [queued]>
+[2023-02-25T03:45:43.814+0000] {taskinstance.py:1279} INFO - 
+--------------------------------------------------------------------------------
+[2023-02-25T03:45:43.817+0000] {taskinstance.py:1280} INFO - Starting attempt 1 of 2
+[2023-02-25T03:45:43.817+0000] {taskinstance.py:1281} INFO - 
+--------------------------------------------------------------------------------
+[2023-02-25T03:45:43.871+0000] {taskinstance.py:1300} INFO - Executing <Task(HttpSensor): is_api_available> on 2023-02-24 00:00:00+00:00
+[2023-02-25T03:45:43.882+0000] {standard_task_runner.py:55} INFO - Started process 14653 to run task
+[2023-02-25T03:45:43.887+0000] {standard_task_runner.py:82} INFO - Running: ['***', 'tasks', 'run', 'predictit_dag', 'is_api_available', 'scheduled__2023-02-24T00:00:00+00:00', '--job-id', '699', '--raw', '--subdir', 'DAGS_FOLDER/predictit_dag.py', '--cfg-path', '/tmp/tmpz4oneg7l']
+[2023-02-25T03:45:43.888+0000] {standard_task_runner.py:83} INFO - Job 699: Subtask is_api_available
+[2023-02-25T03:45:44.048+0000] {task_command.py:388} INFO - Running <TaskInstance: predictit_dag.is_api_available scheduled__2023-02-24T00:00:00+00:00 [running]> on host 9e0dc30811b3
+[2023-02-25T03:45:44.187+0000] {taskinstance.py:1509} INFO - Exporting the following env vars:
+AIRFLOW_CTX_DAG_EMAIL=kyunlee@yahoo.com
+AIRFLOW_CTX_DAG_OWNER=kyun
+AIRFLOW_CTX_DAG_ID=predictit_dag
+AIRFLOW_CTX_TASK_ID=is_api_available
+AIRFLOW_CTX_EXECUTION_DATE=2023-02-24T00:00:00+00:00
+AIRFLOW_CTX_TRY_NUMBER=1
+AIRFLOW_CTX_DAG_RUN_ID=scheduled__2023-02-24T00:00:00+00:00
+[2023-02-25T03:45:44.188+0000] {http.py:122} INFO - Poking: all/
+[2023-02-25T03:45:44.198+0000] {base.py:73} INFO - Using connection ID 'predictit_api' for task execution.
+[2023-02-25T03:45:44.726+0000] {base.py:228} INFO - Success criteria met. Exiting.
+[2023-02-25T03:45:44.734+0000] {taskinstance.py:1323} INFO - Marking task as SUCCESS. dag_id=predictit_dag, task_id=is_api_available, execution_date=20230224T000000, start_date=20230225T034543, end_date=20230225T034544
+[2023-02-25T03:45:44.784+0000] {local_task_job.py:208} INFO - Task exited with return code 0
+[2023-02-25T03:45:44.808+0000] {taskinstance.py:2578} INFO - 1 downstream tasks scheduled from follow-on schedule check
